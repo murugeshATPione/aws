@@ -1,0 +1,955 @@
+aws ec2 
+
+1. what is ec2
+    Ec2 is a elastic compute cloud, it act like a virtual machine and it was rent by user. It provide scalability, flexability, cost effectiveness. so that the user can scale up and down their compute capacity based on their requiremnet needs.
+
+2.What is Security Group in Amazon EC2
+   Amazon security group is a virtual firewall. it act like a protective barrier for your instance and we can specify rules (inbound and outbound rules) determine which traffic is allowd to access your server. you can create one or more security group for instance.
+
+3.What is Amazon Machine Image (AMI)
+    AMI is a pre-configured virtual machne image that is used to create a virtual server. You must specify a AMI image during the launvh od ec2 instance. this is a fast way to create a instance with pre-configured software.
+    we can create a multiple ec2 instance with single AMI.
+
+4.What is instance types
+     there is a instance types, which is general purpose, compute optimized, memory optimized, storage optimized and GPU instance.
+     1 general purpose - this instance designed for balance of compute, memory and networking resource (t3.mediun)
+     2 Compute optimized - this instance designed for application that requires high computational power (c5.large)
+     3 memory optimized - this instance with large memory capacity suitable for memory intensive workload (r5.large)
+     4 storage optimized - this instacne with high-performance storage suitable for data intensive workload (i3.large)
+     5 GPU instance - this instance with powerful gpu for accelerated graphics and parallel processing. (g4dn.xlarge)
+
+5.Explain Stop and Start VS Terminate an Amazon Ec2 Instance
+   stop instance - when you stop the instacne it is temporarly halted and resources such as cpu and memory are released. the instance retain its metadata,attached storage volumes, and IP address when stopped
+   start instance - when you stop and start the instance, the new internal ip will assigned and resources will be same.
+   this option is useful for when you want to pause an instance temporarly without losing data.
+   terminate instance - its a permanently remove the server with allocated resources and you can't retrive the data unless you backup the data. no longer need instance so you can terminate the instance to avoid    ongoing cost.
+
+6. What is the use of Regions and Availability Zones in Amazon EC2 configuration
+    when you confiure a ec2 instance, you ca choose a region where it is deploye and also you can choose a availability zone within this region for improving the fault tolerence and high availability.
+
+7.How do you get charged in AWS
+   instance type - based on type and size of instance.
+   Instance hours - based on how much of time you use and also it will charge for EBS and EFS which is allocated with instance when it is stopped state.
+   On-Demand Instance - based on hours and time with regoin
+   Reserved Instance - charge for reserve the instance, memory, Storage for long month or year.
+   Spot Instance - it work like a bid current value of instance. (supply and demand )
+   storage - EBS and EFS which is allocated with instance based on region, storage type.
+   data transfer - charge for transfer data to different region and availabilty zone over the internet.
+   load balancer, Autoscaling and other services.
+
+8.Explain what happens when you Reboot an EC2 Instance
+   rebooting a ec2 instance, which is useful for resolving the critical system issues, applying update and refreshing the instance environment.
+
+9. List some connection issues that can be faced while connecting to an EC2 instance
+    connection timeout
+    server refusing key
+    host key missing
+    user key recognized
+
+10. Define SNS
+      sns is a sending notification sevices, it will automatically when the activity is happen on cloud.
+
+11.List the various types of Storage gateways
+     volume gateway
+     file gateway
+     tape gateway
+
+12.List the types of Virtualization in AWS
+     parallel virtuaisation 
+     Hardware-assisted virtualization.
+
+13.Define Snowball
+     snowball or snowfalke is used to send the large amount of data in or out of the aws at a meager networking cost.
+
+14.Name the cloud watch merits available for EC2 instances
+     cpu utilization, cpu credit balane, disk write, disk reads, networking, network out
+
+15. what is EBS
+      EBS it is a block level storage service it is designed work with ec2 instance for throughput and transcation intensive workload at any scale. EBS is used to stored persistent data and provide high availability of block level storage volumes. It has three types general purpose, provisione IOPS, magnetics.  
+
+16.Why is Amazon EBS Useful and benefit of EBS
+     EBS provide block level storage service can attach with ec2 instance which is used by relational database service, EBS offer variety of storage, performance, cost. benefit is
+     reliable and secure storage, easy backup, higher performance.
+
+17.What is auto-scaling 
+      Auto-scaling is a function that allows you to provision and launch new instances whenever there is a demand. It allows you to automatically increase or decrease resource capacity in relation to the demand.
+
+18.tools to check aws billing:
+     check the top service table, cost explorer, aws budget, cost allocation tag
+
+
+----------------------------------------workload
+
+Requirements
+1. Docker `sudo yum install docker`
+2. Start the docker `sudo systemctl start docker`
+3.install docker-compose
+sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+
+sudo chmod +x /usr/local/bin/docker-compose
+
+docker-compose version
+
+4. Git `sudo yum install git`
+
+install cahcet
+
+1.docker-compose file - cahnge volumes `docker-compose up -d --build` if it is not working we try manual method
+2.docker file- add data
+3.cmd for intall postgres
+"docker run -d \
+  --name postgres \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -p 5432:5432 \
+  -v /home/apps/postgresql/data:/var/lib/postgresql/data \
+  --restart always \
+  postgres:12-alpine"
+
+4. Build cachet image 
+"docker build . -t cachet"
+
+5.cmd for install cachet
+"docker run -d \
+  --name cachet \
+  -p 80:8000 \
+  --link postgres:postgres \
+  -e DB_DRIVER=pgsql \
+  -e DB_HOST=postgres \
+  -e DB_PORT=5432 \
+  -e DB_DATABASE=postgres \
+  -e DB_USERNAME=postgres \
+  -e DB_PASSWORD=postgres \
+  -e DB_PREFIX=chq_ \
+  -e APP_KEY=base64:Nsp5D4JTrynaJj9i61qtkpFQzyxkksJCWJmD99WxRNk= \
+  -e APP_LOG=errorlog \
+  -e APP_ENV=${APP_ENV:-production} \
+
+
+  -e APP_DEBUG=false \
+  -e DEBUG=false \
+  -e MAIL_DRIVER=smtp \
+  -e MAIL_HOST=smtp.gmail.com \
+  -e MAIL_PORT=587 \
+  -e MAIL_USERNAME=jeki-admin@lmx.ai \
+  -e MAIL_PASSWORD=jwcadzyvxtegrmtq \
+  -e MAIL_ADDRESS=jeki-admin@lmx.ai \
+  -e MAIL_NAME="JEKI - Location Media Xchange - Status Page" \
+  -e MAIL_ENCRYPTION=tls \
+  --restart on-failure \
+  docker image name:latest"
+5. check curl for local "curl http://localhost:80"
+6. add inbound rule on server ( 5432) or we can use tunnel method to take ssh database server " ssh -L 5432:localhost:5432 ec2-user@172.32.26.194 -J jumpbox "
+7.check with public IP server or custom mapping domain.
+8.setup configure in cachet page
+9. Choose database,none,database , add mail for getting notification form given mail.
+
+9.database creation cmd
+
+1. enter in database "docker exec -it cachet-docker-postgres-1 psql -U postgres" and then put cmd to enter "\c" 
+2. create tabel chq-elastic-refrence "create table chq_elastic_reference (component_name varchar(50), api_name varchar(50), link text, response_arn text, status_flag integer default  1);"
+3.check database table "\dt"
+4.create table chq-parent "create table chq_parent_reference (id serial primary key, parent integer, child integer);"
+5.create incident "alter table chq_components add incident_id integer;"
+6.create metric "alter table chq_components add metric_id integer;"
+7.check componenet "\d chq_components;"
+8.select components "select * from chq_components;"
+9.create a data in elastic "insert into chq_elastic_reference( component_name, api_name, link, response_arn ) values ( 'Bastion', '', '', '' );" need to create for number of component (mapping links)
+10.create a parent "insert into chq_parent_reference (parent, child ) values ( 5, 1);" for number of component (mapping group)
+
+
+1.sudo chown apps /home/apps/path - for writable cmd
+2. sudo mv /home/path . - for replace file to users
+3.sudo chmod 666 /var/run/docker.sock - run this cmd for without sudo
+
+
+cmd for process cachet:
+
+    1  sudo yum install docker
+    2  sudo docker ps -a
+    3  sudo systemctl start docker
+    4  sudo docker ps -a
+    5  sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+    6  sudo chmod +x /usr/local/bin/docker-compose
+    7  docker-compose version
+    8  git
+    9  sudo yum install git
+   10  git clone https://github.com/cachethq/Docker.git cachet-docker
+   11  cd cachet-docker
+   12  ls
+   13  nano docker-compose.yml
+   14  docker-compose up -d --build
+   15  sudo docker-compose up -d --build
+   16  sudo docker ps -a
+   17  sudo docker logs cd5dd1c1ec24
+   18  nano docker-compose.yml
+   19  sudo docker-compose down
+   20  sudo docker-compose up -d
+   21  sudo docker ps -a
+   22  curl http://localhost:80
+   23  docker exec -it cachet-docker-postgres-1 psql -U postgres
+   24  sudo docker exec -it cachet-docker-postgres-1 psql -U postgres
+
+
+Supervisor and Automation part:
+
+Automation script : 
+
+1.create a git folder on user: mkdir git
+2.enter on git folder : git clone https://github.com/PiOneData/cachet_automation.git
+3.enter on automation script folder : "pip install requirements.txt" ( if window "psycopg2" either its linux "psycopg2-binary"
+4.then edit in config.ini
+Development
+[DEFAULT]
+LOG_FILE_PATH = automation_log.log
+DATABASE = postgres
+DATABASE_HOST = 127.0.0.1 - local host or if we have cachet app in another server so mention the private ip of that server
+DATABASE_PORT = 5432
+DATABASE_USER = postgres
+DATABASE_PASSWORD = postgres
+TIME_INTERVAL = 1
+CACHET_URL = http://localhost - we can change the ip address of server
+CACHET_APPLICATION = jeki
+CACHET_TOKEN = Nfm3qkzJPTvbEpOdGvY4 - get the token from cachet application
+AWS_ACCESS_KEY = AKIAQXTEO2QTROOAK4P7
+AWS_SECRET_KEY = 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
+AWS_REGION = ap-southeast-1
+5.check the automation script : python3 automation.py
+
+
+1.First install python3-pip for supervisor : using cmd "sudo yum install python3-pip"
+2.Install supervisor : pip install supervisor
+3.Create a directory on user : mkdir supervisor
+4.enter : cd supervisor/
+5.create a file :nano supervisord.conf, and then paste it
+[unix_http_server]
+file=/home/ec2-user/tmp/app.supervisord.sock
+
+[supervisord]
+logfile=/home/ec2-user/log/supervisord.log
+logfile_maxbytes=50MB
+logfile_backup=0
+loglevel=debug
+pidfile=/home/ec2-user/tmp/supervisord.pid
+nodaemon=false
+minfds=1024
+minprocs=200
+
+[rpcinterface:supervisor]
+supervisor.rpcinterface_factory=supervisor.rpcinterface:make_main_rpcinterface
+
+[supervisorctl]
+serverurl=unix:///home/ec2-user/tmp/app.su	pervisord.sock
+history_file=~/.app.sc_history
+
+[include]
+files=supervisord.conf.d/*.conf
+
+here we need to change directory user part in lines, and include file name of supervisorconf 
+
+6. and create a directory on supervisor path : mkdir supervisord.conf.d
+7.create a file on supervisord.conf.d : nano automation_script.conf
+8. paste this on automation_script.conf
+[program:automation] - name
+directory=/home/ec2-user/git/cachet_automation - script path
+command=bash -c "(/usr/bin/python3 automation.py)"
+priority=1
+startretries=10
+stopasgroup=true
+killasgroup=true
+redirect_stderr=true
+autorestart=true
+9. create a directory on user : mkdir /home/user/log/
+10.create a directory on user : mkdir /home/user/tmp/
+11.run this cmd : supervisord
+12.check status of supervisor : supervisorctl status
+
+
+---------------------------------error solving------------------------------------------------
+
+1. if u got this error "permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Get "http://%2Fvar%2Frun%2Fdocker.sock/v1.24/version": dial unix /var/run/docker.sock: connect: permission denied"
+
+sol: run this cmd for get permission for user - "sudo usermod -aG docker $USER" - change the username
+      sudo systemctl status docker - check the status of docker if it is not running then start it
+      sudo chmod 666 /var/run/docker.sock - check the docker socket permission
+      sudo systemctl restart docker - then restart the docker
+      
+e2enetworks@1234
+
+faced supervisor error 
+solu:  first check logs and installed dependency and again restart the application and check logs,again installed dependency and give write access to user which is having script and finally restarted. the start
+
+------------------cmd to take backup docker image---------------------------------------
+
+1.docker ps 
+2.docker stop container_name_or_id - stoping container
+3.docker export 34f57dc3fc64 > db-backup-6-2-24.tar - Export the Container as an Archive
+4.scp db-backup-6-2-24.tar root@216.48.177.33:/root/db-backup - Transfer the Backup
+5. cat backup.tar | docker import - new_image_name:tag - Restore from Backup
+
+---------------------move single or entire file from remote server to local server---------------------------
+run this cmd to local server
+1.scp root@216.48.177.33:/root/db-backup/db-backup-6-2-24.tar . - for single file
+2.scp root@216.48.177.33:/root/db-backup/db-backup-6-2-24.tar - it same for entire file just change the file name
+scp root@216.48.190.212:/root/db-backup-16-2-24.tar D:\CN2
+
+scp db-backup-12-2-24.tar pione@192.168.1.15:/docker/       
+
+---------------------cmd to create a sql docker container -------------------------------
+1.need to import the tar file to docker by using docker cmd - "docker import /home/pione/db-backup-16-2-24.tar msaql:latest"
+2. then run the image as a docker container by using cmd  "sudo docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=Welcome@123$" \
+-p 1433:1433 --name sql-database --hostname dbserver \
+-v sqlserver_data:/var/opt/mssql \
+-d mssql:latest /opt/mssql/bin/sqlservr "
+
+3. after this check the docker container is running or not by using cmd "docker ps -a"
+
+database sepearte ubuntu
+python sepearte ubuntu
+.net , angular in one window
+
+--------------------------cmd to install xwiki and database----------------------
+url - https://github.com/xwiki/xwiki-docker/blob/master/README.md
+steps:
+create a bridge network - " docker network create -d bridge xwiki-nw"
+create a xwiki image - "docker pull xwiki:stable-postgres-tomcat"
+create a database image - "docker pull postgres:16"
+create a databse postgres with image name- " docker run --net=xwiki-nw --name postgres-xwiki -v /my/path/postgres:/var/lib/postgresql/data -e POSTGRES_ROOT_PASSWORD=xwiki -e POSTGRES_USER=xwiki -e POSTGRES_PASSWORD=xwiki -e POSTGRES_DB=xwiki -e POSTGRES_INITDB_ARGS="--encoding=UTF8" -d postgres:16 "
+create a xwiki container with image - "docker run --net=xwiki-nw --name xwiki -p 8080:8080 -v /my/path/xwiki:/usr/local/xwiki -e DB_USER=xwiki -e DB_PASSWORD=xwiki -e DB_DATABASE=xwiki -e DB_HOST=postgres-xwiki xwiki:stable-postgres-tomcat "
+
+
+-----------------------cmd to connect window server from local ubuntu server ---------------
+step: install freerdp : "sudo apt-get install freerdp2-x11"
+2.cmd for external network "xfreerdp /v:122.165.43.118:3389 /u:pione /p:Murugesh@pi /cert-ignore /sec:nla"
+3.cmd for internal network "xfreerdp /v:192.168.1.13:3389 /u:pione /p:Murugesh@pi /cert-ignore /sec:nla"
+
+
+----------------------screen flickering problem -------------------
+press - shift+ctrl+alt+b
+
+-------------------IIS http header error -------------------
+solution for iis http response header, download the pachage "https://dotnet.microsoft.com/en-us/download/dotnet/3.1" IIS runtime support (ASP.NET Core Module v2) "hosting bundle and *64 for window
+
+--------------------enable sql agent xps----------------
+run this query "sp_configure 'Agent XPs',1"
+next       "Reconfigure"
+
+--------------------------remote desktop lisence error----------------------
+add group policy per device
+add user in remote group
+ 
+----------------------------version lock ------------------------
+
+sudo yum versionlock add python3
+ -------------------------supervisor logs chcek -------------------------------
+supervisorctl tail -n 10 cachet
+journalctl -n 10 -u apache2 - systemctl 
+kubectl logs --tail=10 <pod-name>
+
+
+
+-------------------------deployment
+
+deployment of monitor hub in server :
+
+step1 -clone the folder from git repository "git clone https://github.com/PiOneData/monitor_hub.git"
+step2 - username 
+step3- token, which you can generate in your git account " setting-developersetting-token"
+after that u will find the source folder "monitor_hub" 
+step4- go into the folder "cd monitor_hub"
+step5- checkout to branch "git checkout dev"
+step6- first build the docker image, pull from docker " docker pull mysql "
+step 7- run the container with pulled image
+docker run -d --name monitorhub_mysql -e MYSQL_DATABASE=monitorhub_dev -e MYSQL_USER=root -e MYSQL_PASSWORD=Sql#24,my() -e MYSQL_ROOT_PASSWORD=Sql#24,my() -p 3306:3306 mysql:latest
+step8- after run container, then need to add the details " ip and port " in source file " server-monitorhubspace-setting.py"
+step9 - next, in docker compose file need to comment the UI build part
+step10 - then cmd to run a python container " docker-compose up -d --build "
+step11 - next run the UI build in window IIS server, git clone on winodw server "comand prompt "git clone https://github.com/PiOneData/monitor_hub.git"
+step12- edit the base url in folder "client-src-environment-environment.ts file" which is a python url with port
+step13. the run this cmd "npm run build", if npm is not install you need to install it.
+step14- after that u will get a new dist folder into the client folder
+step15. then create a IIS site and add the pysical path "client folder to fuse folder"
+step16- then run in local host.
+
+
+-----------------------------------------application script
+
+
+1. Supervisor script :
+
+#!/bin/bash
+
+supervisor_status() {
+    echo "Checking supervisor status"
+    out=$(sudo su - apps -c "supervisorctl status;exit")
+    echo "Status: $out"
+
+    # If application not running, restart
+    if [[ $out != *"RUNNING"* ]]; then
+        echo "Restating supervisor"
+        sudo su - apps -c "supervisorctl restart account;exit"
+
+        # Check status after restart
+        out=$(sudo su - apps -c "supervisorctl status;exit")
+        echo "Status after restart: $out"
+
+        # Get latest log
+        log=$(sudo su - apps -c "supervisorctl tail account | tail -n 2 ;exit")
+        echo "Tail log of the application:"
+        echo "$log"
+
+        log=$(sudo su - apps -c "tail -n 1 log/titan-accounts/accounts.error.log;exit")
+        echo "Error Log of the application:"
+        echo "$log"
+    fi
+}
+
+supervisor_status
+
+2. docker script :
+
+#!/bin/bash
+
+docker_status() {
+    container="$1"
+    echo "Checking Docker status"
+    out=$(sudo su - apps -c "docker ps --filter name=$container -a; exit")
+    echo "Status: $out"
+
+    # If application not running, restart
+    if [[ $out == *"Exited"* ]]; then
+        echo "Restating Docker container"
+        sudo su - apps -c "docker start $container; exit"
+    fi
+}
+
+docker_status "jeki-tolgee"
+docker_status "apps-db-1"
+
+3.systemctl nginx or rabbitmq script: 
+
+#!/bin/bash
+
+systemd_status() {
+    service="$1"
+    echo "Checking Systemd status"
+    out=$(systemctl status "$service".service)
+    echo "Status: $out"
+
+    # If application not running, restart
+    if [[ $out != *"running"* ]]; then
+        echo "Restarting systemd service"
+        systemctl restart "$service".service
+
+        # Check status after restart
+        out=$(systemctl status "$service".service)
+        echo "Status after restart: $out"
+
+        # Get latest log
+        log=$(sudo journalctl -u "$service".service -n 3)
+        echo "Latest log of the application:"
+        echo "$log"
+    fi
+}
+
+systemd_status "rabbitmq-server"
+systemd_status "nginx"
+
+
+-------------------------------------------------------aws runbook script
+
+
+
+shell scripting for start ec2 instance for on-demand
+
+{
+  "description": "Restart EC2 instances(s)",
+  "schemaVersion": "0.3",
+  "assumeRole": "{{ AutomationAssumeRole }}",
+  "parameters": {
+    "InstanceId": {
+      "type": "StringList",
+      "description": "(Required) EC2 Instance(s) to restart",
+      "default": [
+        "i-06cff0f76e1e821d8"
+      ]
+    },
+    "AutomationAssumeRole": {
+      "type": "String",
+      "description": "(Optional) The ARN of the role that allows Automation to perform the actions on your behalf.",
+      "default": "arn:aws:iam::050676552743:role/AutomationAssumeRole"
+    }
+  },
+  "mainSteps": [
+    {
+      "name": "startInstances",
+      "action": "aws:changeInstanceState",
+      "inputs": {
+        "InstanceIds": "{{ InstanceId }}",
+        "DesiredState": "running"
+      }
+    }
+  ]
+}
+
+shell scripting for start application supervisor process controller for on-demand
+{
+  "schemaVersion": "1.2",
+  "description": "Run a shell script or specify the commands to run.",
+  "parameters": {
+    "commands": {
+      "type": "StringList",
+      "description": "(Required) Specify a shell script or a command to run.",
+      "minItems": 1,
+      "displayType": "textarea",
+      "default": [
+        "#!/bin/bash",
+        "supervisor_status() {",
+        "    echo \"Checking supervisor status\"",
+        "    out=$(sudo su - apps -c \"supervisorctl status;exit\")",
+        "    echo \"Status: $out\"",
+        "",
+        "    # If application not running, restart",
+        "    if [[ $out != *\"RUNNING\"* ]]; then",
+        "        echo \"Restating supervisor\"",
+        "        sudo su - apps -c \"supervisorctl restart data-synth;exit\"",
+        "",
+        "        # Check status after restart",
+        "        out=$(sudo su - apps -c \"supervisorctl status;exit\")",
+        "        echo \"Status after restart: $out\"",
+        "",
+        "        # Get latest log",
+        "        log=$(sudo su - apps -c \"supervisorctl tail data-synth | tail -n 2;exit\")",
+        "        echo \"tail log of the application:\"",
+        "        echo \"$log\"",
+        "",
+        "        log=$(sudo su - apps -c \"tail -n 1 log/data-synth/synth_data.error.log;exit\")",
+        "        echo \"Error Log of the application:\"",
+        "        echo \"$log\"",
+        "    fi",
+        "}",
+        "",
+        "supervisor_status"
+      ]
+    },
+    "workingDirectory": {
+      "type": "String",
+      "description": "(Optional) The path to the working directory on your instance.",
+      "maxChars": 4096
+    },
+    "executionTimeout": {
+      "type": "String",
+      "default": "3600",
+      "description": "(Optional) The time in seconds for a command to complete before it is considered to have failed. Default is 3600 (1 hour). Maximum is 172800 (48 hours).",
+      "allowedPattern": "([1-9][0-9]{0,4})|(1[0-6][0-9]{4})|(17[0-1][0-9]{3})|(172[0-7][0-9]{2})|(172800)"
+    }
+  },
+  "runtimeConfig": {
+    "aws:runShellScript": {
+      "properties": [
+        {
+          "id": "0.aws:runShellScript",
+          "runCommand": "{{ commands }}",
+          "workingDirectory": "{{ workingDirectory }}",
+          "timeoutSeconds": "{{ executionTimeout }}"
+        }
+      ]
+    }
+  }
+}
+
+sheel script for spot instance 
+
+{
+  "description": "Restart EC2 instances(s) based on tags",
+  "schemaVersion": "0.3",
+  "assumeRole": "{{ AutomationAssumeRole }}",
+  "parameters": {
+    "ServerTagKey": {
+      "type": "String",
+      "description": "(Required) The tag key to filter on",
+      "default": "Name"
+    },
+    "ServerTagValue": {
+      "type": "String",
+      "description": "(Required) The tag value to filter on",
+      "default": "LMXC-Jeki-Socket-Server-Production"
+    },
+    "AutomationAssumeRole": {
+      "type": "String",
+      "description": "(Optional) The ARN of the role that allows Automation to perform the actions on your behalf.",
+      "default": "arn:aws:iam::050676552743:role/AutomationAssumeRole"
+    }
+  },
+  "mainSteps": [
+    {
+      "name": "getInstanceIds",
+      "action": "aws:executeAwsApi",
+      "inputs": {
+        "Service": "ec2",
+        "Api": "DescribeInstances",
+        "Filters": [
+          {
+            "Name": "tag:{{ ServerTagKey }}",
+            "Values": [
+              "{{ ServerTagValue }}"
+            ]
+          },
+          {
+            "Name": "instance-state-name",
+            "Values": [
+              "stopped"
+            ]
+          }
+        ]
+      },
+      "outputs": [
+        {
+          "Name": "InstanceIds",
+          "Selector": "$.Reservations..Instances..InstanceId",
+          "Type": "StringList"
+        }
+      ]
+    },
+    {
+      "name": "startInstances",
+      "action": "aws:changeInstanceState",
+      "inputs": {
+        "InstanceIds": "{{ getInstanceIds.InstanceIds }}",
+        "DesiredState": "running"
+      },
+      "onFailure": "step:getInstanceId"
+    },
+    {
+      "name": "getInstanceId",
+      "action": "aws:executeAwsApi",
+      "inputs": {
+        "Service": "ec2",
+        "Api": "DescribeInstances",
+        "Filters": [
+          {
+            "Name": "tag:{{ ServerTagKey }}",
+            "Values": [
+              "{{ ServerTagValue }}"
+            ]
+          },
+          {
+            "Name": "instance-state-name",
+            "Values": [
+              "running"
+            ]
+          }
+        ]
+      },
+      "outputs": [
+        {
+          "Name": "InstanceIds",
+          "Selector": "$.Reservations..Instances..InstanceId",
+          "Type": "StringList"
+        }
+      ]
+    },
+    {
+      "name": "checkSupervisorStatus",
+      "action": "aws:runCommand",
+      "inputs": {
+        "DocumentName": "AWS-RunShellScript",
+        "Targets": [
+          {
+            "Key": "InstanceIds",
+            "Values": "{{ getInstanceId.InstanceIds }}"
+          }
+        ],
+        "Parameters": {
+          "commands": [
+            "supervisor_status() {",
+            "    echo \"Checking supervisor status\"",
+            "    out=$(sudo su - apps -c \"supervisorctl status $1;exit\")",
+            "    echo \"Status: $out\"",
+            "",
+            "    # If application not running, restart",
+            "  if [ -z \"$(echo $out | grep \"RUNNING\")\" ]; then",
+            "        echo \"Restarting supervisor\"",
+            "        sudo su - apps -c \"supervisorctl start $1;exit\"",
+            "    fi",
+            "}",
+            "",
+            "supervisor_status \"mac_forwarder_proxyagent_production\"",
+            "supervisor_status \"mac_socket_production:mac_socket_production_15000\"",
+            "supervisor_status \"mac_socket_production:mac_socket_production_15001\"",
+            "supervisor_status \"mac_socket_production:mac_socket_production_15002\"",
+            "supervisor_status \"mac_socket_production:mac_socket_production_15003\"",
+            "supervisor_status \"mac_socket_production:mac_socket_production_15004\"",
+            "supervisor_status \"mac_socket_production:mac_socket_production_15005\"",
+            "supervisor_status \"mac_socket_production:mac_socket_production_15006\"",
+            "supervisor_status \"mac_socket_production:mac_socket_production_15007\"",
+            "supervisor_status \"mac_socket_production:mac_socket_production_15008\"",
+            "supervisor_status \"mac_socket_production:mac_socket_production_15009\"",
+            "supervisor_status \"mac_socket_production:mac_socket_production_15010\"",
+            "supervisor_status \"mac_socket_production:mac_socket_production_15011\"",
+            "supervisor_status \"mac_socket_production:mac_socket_production_15012\"",
+            "supervisor_status \"mac_socket_production:mac_socket_production_15013\"",
+            "supervisor_status \"mac_socket_production:mac_socket_production_15014\"",
+            "supervisor_status \"mac_socket_production:mac_socket_production_15015\""
+          ]
+        }
+      }
+    }
+  ]
+}
+
+
+shell script for docker
+
+{
+  "schemaVersion": "1.2",
+  "description": "Run a shell script or specify the commands to run.",
+  "parameters": {
+    "commands": {
+      "type": "StringList",
+      "description": "(Required) Specify a shell script or a command to run.",
+      "minItems": 1,
+      "displayType": "textarea",
+      "default": [
+        "     #!/bin/bash",
+        "      check_Docker_status() {",
+        "      local container=\"$1\"",
+        "      echo \"Checking Docker status for $container\"",
+        "      out=$(docker ps --filter name=$container -a; exit)",
+        "      echo \"Status: $out\"",
+        "",
+        "      # If container is exited, restart",
+        "      if [[ $out == *\"Exited\"* ]]; then",
+        "      echo \"Restarting Docker container: $container\"",
+        "      sudo su - apps -c \"docker start $container; exit\"",
+        "      fi",
+        "  }",
+        "",
+        "      check_supervisor_status() {",
+        "      local instance=\"$1\"",
+        "      echo \"Checking supervisor status for $instance\"",
+        "      out=$(cd supervisor/ && supervisorctl status \"$instance\")",
+        "      echo \"Status: $out\"",
+        "",
+        "      # If application not running, restart",
+        "      if [[ $out != *\"RUNNING\"* ]]; then",
+        "      echo \"Restarting supervisor for $instance\"",
+        "      cd supervisor/ && supervisorctl start \"$instance\"",
+        "",
+        "      # Check status after restart",
+        "      out=$(cd supervisor/ && supervisorctl status \"$instance\")",
+        "      echo \"Status after restart:\" $out",
+        "      # Get latest log",
+        "      log=$(cd log/ && tail -10 supervisord.log)",
+        "      echo \"log of the application:\" $log",
+        "      fi",
+        "  }",
+        "",
+        "     # Call docker_status function for specified Docker containers",
+        "      docker_status \"cachet-docker-cachet-1\"",
+        "      docker_status \"cachet-docker-postgres-1\"",
+        "",
+        "  # Check Supervisor status for multiple instances",
+        "  check_supervisor_status \"automation\""
+      ]
+    },
+    "workingDirectory": {
+      "type": "String",
+      "description": "(Optional) The path to the working directory on your instance.",
+      "maxChars": 4096
+    },
+    "executionTimeout": {
+      "type": "String",
+      "default": "3600",
+      "description": "(Optional) The time in seconds for a command to complete before it is considered to have failed. Default is 3600 (1 hour). Maximum is 172800 (48 hours).",
+      "allowedPattern": "([1-9][0-9]{0,4})|(1[0-6][0-9]{4})|(17[0-1][0-9]{3})|(172[0-7][0-9]{2})|(172800)"
+    }
+  },
+  "runtimeConfig": {
+    "aws:runShellScript": {
+      "properties": [
+        {
+          "id": "0.aws:runShellScript",
+          "runCommand": "{{ commands }}",
+          "workingDirectory": "{{ workingDirectory }}",
+          "timeoutSeconds": "{{ executionTimeout }}"
+        }
+      ]
+    }
+  }
+}
+
+
+shell scripting for systemctl application
+
+{
+  "schemaVersion": "1.2",
+  "description": "Run a shell script or specify the commands to run.",
+  "parameters": {
+    "commands": {
+      "type": "StringList",
+      "description": "(Required) Specify a shell script or a command to run.",
+      "minItems": 1,
+      "displayType": "textarea",
+      "default": [
+        "     #!/bin/bash",
+        "      check_systemd_status() {",
+        "      local service=\"$1\"",
+        "      echo \"Checking Systemd status for $service\"",
+        "      out=$(systemctl status \"$service\".service)",
+        "      echo \"Status: $out\"",
+        "",
+        "      # If application not running, restart",
+        "      if [[ $out != *\"running\"* ]]; then",
+        "      echo \"Restarting systemd service\"",
+        "      systemctl restart \"$service\".service",
+        "",
+        "      # Check status after restart",
+        "      out=$(systemctl status \"$service\".service)",
+        "      echo \"Status after restart: $out\"",
+        "",
+        "      # Get latest log",
+        "      log=$(sudo journalctl -u \"$service\".service -n 3)",
+        "      echo \"Latest log of the application:\"",
+        "      echo \"$log\"",
+        "      fi",
+        "  }",
+        "",
+        "      check_supervisor_status() {",
+        "      local instance=\"$1\"",
+        "      echo \"Checking supervisor status for $instance\"",
+        "      out=$(sudo su - apps -c \"supervisorctl status $instance; exit\")",
+        "      echo \"Status: $out\"",
+        "",
+        "      # If application not running, restart",
+        "      if [[ $out != *\"RUNNING\"* ]]; then",
+        "      echo \"Restarting supervisor for $instance\"",
+        "      sudo su - apps -c \"supervisorctl start $instance; exit\"",
+        "",
+        "      # Check status after restart",
+        "      out=$(sudo su - apps -c \"supervisorctl status $instance; exit\")",
+        "      echo \"Status after restart:\" $out",
+        "      # Get latest log",
+        "      log=$(sudo su - apps -c \"tail -n 5 log/supervisord.log; exit\")",
+        "      echo \"log of the application:\" $log",
+        "      fi",
+        "  }",
+        "",
+        "  # Check Systemd status for nginx",
+        "  check_systemd_status \"nginx\"",
+        "",
+        "  # Check Supervisor status for multiple instances",
+        "  check_supervisor_status \"mw_synthesize_data_api\""
+      ]
+    },
+    "workingDirectory": {
+      "type": "String",
+      "description": "(Optional) The path to the working directory on your instance.",
+      "maxChars": 4096
+    },
+    "executionTimeout": {
+      "type": "String",
+      "default": "3600",
+      "description": "(Optional) The time in seconds for a command to complete before it is considered to have failed. Default is 3600 (1 hour). Maximum is 172800 (48 hours).",
+      "allowedPattern": "([1-9][0-9]{0,4})|(1[0-6][0-9]{4})|(17[0-1][0-9]{3})|(172[0-7][0-9]{2})|(172800)"
+    }
+  },
+  "runtimeConfig": {
+    "aws:runShellScript": {
+      "properties": [
+        {
+          "id": "0.aws:runShellScript",
+          "runCommand": "{{ commands }}",
+          "workingDirectory": "{{ workingDirectory }}",
+          "timeoutSeconds": "{{ executionTimeout }}"
+        }
+      ]
+    }
+  }
+}
+
+
+
+
+---------------------------------linux cmd
+
+user create 
+
+1sudo adduser username
+2sudo usermod -aG sudo username - admin access
+3sudo usermod -l new_username old_username - username change
+4sudo passwd new_username - paswword change
+5who - user check
+6cat /etc/passwd - list of users
+7getent passwd - list of file
+8free -h - ram chekc
+9sudo yum versionlock add python3 - version lock
+10sudo sync && sudo echo 3 > /proc/sys/vm/drop_caches - clear unmanted memory
+11ls -l myfile.txt - list file size
+12stat -c %s myfile.txt - file size without other detail
+13sudo fdisk /dev/sdb
+# Press 'n' to create a new partition
+# Specify partition number, starting sector, and for size, you can specify +100G
+# Press 'w' to write changes to disk and exit   --- new partion
+14sudo mkfs.ext4 /dev/sdb1 - replace 
+15 find /path/to/search -type f -atime +90 - check the unused file for 90 days
+16 find /path/to/search -type f -size +1G -exec ls -lh {} \; - list the fole gb
+17 find /path/to/search -size +1G -type f -exec lsof {} + | grep -vE '^COMMAND' - list unused file of gb
+18 find /path/to/search -size +1G -type f - list the direct file of gb
+19 netstat -tuln, ss -tuln - cmd to check all port 
+20 netstat -tuln | grep 80, ss -tuln | grep 80 - specific port
+21 sudo kill 1234 - kill port
+22 cd my_directory
+git add .
+git commit -m "Added my_directory contents"
+git push origin master - transfer file to git
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
